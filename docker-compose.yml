@@ -1,0 +1,22 @@
+version: '3.3'
+
+services:
+  api:
+    container_name: sporttrade-api
+    build: ./api
+    volumes:
+      - './:/api'
+      - '/api/node_modules'
+    ports:
+      - 5000:5000
+    command: npm start
+  app:
+    container_name: sporttrade-app
+    build: ./app
+    volumes:
+      - './:/app'
+      - '/app/node_modules'
+    ports:
+      - 3000:3000
+    stdin_open: true
+    command: npm start
