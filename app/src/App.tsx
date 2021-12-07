@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Container } from '@material-ui/core';
 
 import { OptionsPricesTableData } from './models/OptionsPricesTableData';

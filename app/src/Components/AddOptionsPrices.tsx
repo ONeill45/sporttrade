@@ -22,11 +22,10 @@ export const AddOptionsPrices: React.FC<IAddOptionsPricesProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     index: number,
   ) => {
-    if (e.target.value) {
-      let currentPrices = [...prices];
-      currentPrices[index] = parseInt(e.target.value);
-      setPrices(currentPrices);
-    }
+    const value = parseInt(e.target.value);
+    let currentPrices = [...prices];
+    currentPrices[index] = isNaN(value) ? null : value;
+    setPrices(currentPrices);
   };
 
   /**
