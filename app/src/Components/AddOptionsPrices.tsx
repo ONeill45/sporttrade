@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Grid, Button, TextField } from '@material-ui/core';
-import { Delete, Add } from '@material-ui/icons';
 
 interface IAddOptionsPricesProps {
   updateTableData(validPrices: number[], profit: number): void;
@@ -9,49 +8,36 @@ interface IAddOptionsPricesProps {
 export const AddOptionsPrices: React.FC<IAddOptionsPricesProps> = ({
   updateTableData,
 }) => {
-  const [prices, setPrices] = useState<Array<number | null>>([null, null]);
+  const [pricesString, setPricesString] = useState<string>('');
 
   /**
    *
    * @param e
    * @param index
    *
-   * handles change in value of a specific price in the array using the index
+   *store prices as a string and update on change
    */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index: number,
   ) => {
-    const value = parseInt(e.target.value);
-    let currentPrices = [...prices];
-    currentPrices[index] = isNaN(value) ? null : value;
-    setPrices(currentPrices);
+    setPricesString(e.target.value);
   };
 
   /**
-   * allows user to add more input fields for prices beyond the initial 2 the page is populated with
-   */
-  const addPrice = () => {
-    // capped at 10 for demo purposes, could handle more if needed
-    if (prices.length < 10) {
-      const currentPrices = [...prices];
-      currentPrices.push(null);
-      setPrices(currentPrices);
-    }
-  };
-
-  /**
-   * submits to the api the list of prices (sanitized to remove nulls)
+   * submits to the api the list of prices
    */
   const submit = () => {
-    const validPrices: number[] = prices.filter(
-      (price) => price !== null,
-    ) as number[];
+    // on submit, transform string into array of prices
+    const prices = pricesString
+      .replace('[', '')
+      .replace(']', '')
+      .split(',')
+      .map((price) => parseInt(price));
     fetch('http://localhost:5000/profit', {
       method: 'POST',
       mode: 'cors',
       body: JSON.stringify({
-        prices: validPrices,
+        prices: prices,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -59,32 +45,22 @@ export const AddOptionsPrices: React.FC<IAddOptionsPricesProps> = ({
     })
       .then((response) => response.json())
       .then((data) => {
-        updateTableData(validPrices, data);
+        updateTableData(prices, data);
       });
   };
 
   return (
     <Grid container direction='column' alignItems='flex-start'>
       <Grid item container direction='column'>
-        {prices.map((price, i) => {
-          return (
-            <Grid item container alignItems='center' key={i}>
-              <Grid item xs={8}>
-                <TextField
-                  fullWidth
-                  label='Price'
-                  value={price || ''}
-                  onChange={(e) => handleChange(e, i)}
-                ></TextField>
-              </Grid>
-              <Grid item xs={4}>
-                <Delete />
-              </Grid>
-            </Grid>
-          );
-        })}
+        <Grid item xs={8}>
+          <TextField
+            fullWidth
+            label='Prices'
+            value={pricesString}
+            onChange={handleChange}
+          ></TextField>
+        </Grid>
       </Grid>
-      <Add onClick={addPrice} />
       <Button onClick={submit}>Submit</Button>
     </Grid>
   );
