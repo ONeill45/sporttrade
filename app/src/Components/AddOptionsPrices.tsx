@@ -33,7 +33,7 @@ export const AddOptionsPrices: React.FC<IAddOptionsPricesProps> = ({
       .replace(']', '')
       .split(',')
       .map((price) => parseInt(price));
-    fetch('http://localhost:5000/profit', {
+    fetch(process.env.REACT_APP_API_URL!, {
       method: 'POST',
       mode: 'cors',
       body: JSON.stringify({
